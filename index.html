@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>熊野古道中邊路全踏破之旅 ⛩️</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600;800&family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Sans+JP:wght@300;400;500&family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            kumano: {
+              primary:   '#1E3A34',
+              secondary: '#2F5D50',
+              accent:    '#C26A3D',
+              bg:        '#F4F1EA',
+              mist:      '#E8E3D9',
+              teal:      '#3C7A73',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      font-family: 'Noto Sans TC', 'Noto Sans JP', sans-serif;
+      background: #F4F1EA;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    .font-display { font-family: 'Shippori Mincho', serif; }
+    .font-number  { font-family: 'Inter', sans-serif; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: #E8E3D9; }
+    ::-webkit-scrollbar-thumb { background: #3C7A73; border-radius: 4px; }
+
+    /* ── Header ── */
+    .header-banner {
+      background: linear-gradient(135deg, #1E3A34 0%, #2F5D50 100%);
+      position: fixed; top:0; left:0; right:0; z-index:50; overflow: hidden;
+    }
+    .header-banner::before {
+      content:'';
+      position:absolute; inset:0;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 200'%3E%3Cpath fill='rgba(255,255,255,0.06)' d='M0,80 C300,160 700,20 1100,90 C1250,120 1380,60 1440,80 L1440,200 L0,200Z'/%3E%3C/svg%3E") bottom/cover no-repeat;
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: #fff; border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(30,58,52,.10);
+      transition: transform .18s, box-shadow .18s;
+    }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(30,58,52,.16); }
+
+    /* ── Bottom nav ── */
+    .bottom-nav { box-shadow: 0 -2px 16px rgba(0,0,0,0.10); }
+    .nav-btn { transition: all .2s; }
+    .nav-btn.active { color: #C26A3D; }
+    .nav-btn.active .nav-icon { transform: translateY(-2px); }
+
+    /* ── Sections ── */
+    .page-section { display: none; }
+    .page-section.active { display: block; animation: fadeUp .3s ease; }
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(10px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    /* ── Day tabs ── */
+    .day-tab { cursor:pointer; transition: all .2s; white-space:nowrap; }
+    .day-tab.active { background:#C26A3D !important; color:#fff !important; border-color:#C26A3D !important; }
+    .scrollbar-hide::-webkit-scrollbar { display:none; }
+    .scrollbar-hide { -ms-overflow-style:none; scrollbar-width:none; }
+
+    /* ── Timeline ── */
+    .tl-dot {
+      width:12px; height:12px; border-radius:50%;
+      flex-shrink:0; margin-top:4px;
+    }
+    .tl-line {
+      width:2px; flex-shrink:0; margin-left:5px;
+      background: linear-gradient(to bottom, #C26A3D, #3C7A73);
+    }
+
+    /* ── Hike badge ── */
+    .hike-badge {
+      background: linear-gradient(135deg,#1E3A34,#3C7A73);
+      color:#fff; border-radius:20px; padding:2px 10px;
+      font-size:11px; display:inline-flex; align-items:center; gap:4px;
+    }
+
+    /* ── Progress bar ── */
+    .prog-track { height:8px; border-radius:4px; background:#E8E3D9; overflow:hidden; }
+    .prog-fill   { height:100%; border-radius:4px; background:linear-gradient(90deg,#C26A3D,#3C7A73); transition:width .5s; }
+
+    /* ── Expense rows ── */
+    .exp-row { border-bottom:1px solid #E8E3D9; }
+    .exp-row:last-child { border-bottom:none; }
+
+    /* ── Map ── */
+    .map-wrap { border-radius:10px; overflow:hidden; height:260px; }
+    .map-wrap iframe { width:100%; height:100%; border:0; }
+
+    /* ── Check items ── */
+    .cl-item:hover { background:#F4F1EA; border-radius:6px; }
+
+    /* ── Emoji deco ── */
+    .emoji-deco {
+      position:absolute; opacity:.10; font-size:3rem;
+      pointer-events:none; user-select:none;
+    }
+
+    /* ── 字體放大模式 (body.large-font) ── */
+    body.large-font .text-\[10px\] { font-size:15px !important; line-height:1.5 !important; }
+    body.large-font .text-xs   { font-size:17px !important; line-height:1.5 !important; }
+    body.large-font .text-sm   { font-size:19px !important; line-height:1.5 !important; }
+    body.large-font .text-base { font-size:21px !important; line-height:1.6 !important; }
+    body.large-font .text-lg   { font-size:23px !important; line-height:1.5 !important; }
+    body.large-font .text-xl   { font-size:25px !important; line-height:1.4 !important; }
+    body.large-font .text-2xl  { font-size:29px !important; line-height:1.3 !important; }
+    body.large-font .text-3xl  { font-size:35px !important; line-height:1.2 !important; }
+
+    /* ── 字體切換按鈕 ── */
+    #font-toggle-btn {
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.4);
+      border-radius: 20px;
+      padding: 3px 10px;
+      color: #fff;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: background .2s;
+      white-space: nowrap;
+      backdrop-filter: blur(4px);
+    }
+    #font-toggle-btn:hover { background: rgba(255,255,255,0.30); }
+    #font-toggle-btn .badge {
+      font-size: 10px;
+      background: #C26A3D;
+      border-radius: 10px;
+      padding: 1px 5px;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     HEADER
+══════════════════════════════════════════ -->
+<header class="header-banner text-white px-4 py-3">
+  <div class="flex items-center justify-between relative z-10">
+    <div class="flex items-center gap-2">
+      <span class="text-2xl">⛩️</span>
+      <div>
+        <h1 class="font-display font-bold text-base leading-tight">熊野古道中邊路全踏破之旅</h1>
+        <p class="text-xs opacity-70">2026.11.23–11.30</p>
+      </div>
+    </div>
+    <div class="flex flex-col items-end gap-1">
+      <div class="flex items-center gap-1 bg-white/20 rounded-full px-2 py-0.5 text-xs backdrop-blur-sm">
+        <i class="fa-solid fa-plane text-[10px]"></i>
+        <span id="header-countdown">計算中...</span>
+      </div>
+      <div class="flex items-center gap-1 bg-white/20 rounded-full px-2 py-0.5 text-xs backdrop-blur-sm">
+        <i class="fa-solid fa-person-hiking text-[10px]"></i>
+        <span>已走 <span id="header-hike-km" class="font-number font-bold">0</span> KM</span>
+      </div>
+      <button id="font-toggle-btn" onclick="toggleFontSize()">
+        <i class="fa-solid fa-text-height"></i>
+        <span id="font-toggle-label">A+</span>
+        <span class="badge" id="font-toggle-badge">標準</span>
+      </button>
+    </div>
+  </div>
+  <span class="emoji-deco" style="right:18%;top:5%;">🌲</span>
+  <span class="emoji-deco" style="right:4%;top:40%;">⛩️</span>
+</header>
+
+
+<!-- ══════════════════════════════════════════
+     MAIN CONTENT
+══════════════════════════════════════════ -->
+<main id="main-content" class="pb-24 px-3 max-w-2xl mx-auto">
+
+  <!-- ──────────────────────────────────────
+       SECTION: DASHBOARD 總覽
+  ────────────────────────────────────────── -->
+  <section id="sec-dashboard" class="page-section active">
+    <h2 class="text-sm font-bold mb-3 flex items-center gap-2" style="color:#C26A3D;">
+      <i class="fa-solid fa-gauge-high"></i> 旅程總覽
+    </h2>
+
+    <!-- Flights -->
+    <div class="grid grid-cols-2 gap-3 mb-4">
+      <div class="card p-3">
+        <div class="flex items-center gap-2 mb-1">
+          <i class="fa-solid fa-plane-departure text-sm" style="color:#3C7A73;"></i>
+          <span class="text-xs font-bold text-gray-500">去程</span>
+        </div>
+        <p class="font-bold text-sm">BR130</p>
+        <p class="font-bold text-base" style="color:#C26A3D;">08:30 → 12:05</p>
+        <p class="text-xs text-gray-400 mt-0.5">11/23 (一) 桃園 → 關西</p>
+      </div>
+      <div class="card p-3">
+        <div class="flex items-center gap-2 mb-1">
+          <i class="fa-solid fa-plane-arrival text-sm" style="color:#C26A3D;"></i>
+          <span class="text-xs font-bold text-gray-500">回程</span>
+        </div>
+        <p class="font-bold text-sm">BR131</p>
+        <p class="font-bold text-base" style="color:#3C7A73;">13:10 → 15:00</p>
+        <p class="text-xs text-gray-400 mt-0.5">11/30 (一) 關西 → 桃園</p>
+      </div>
+    </div>
+
+    <!-- Today's plan -->
+    <div class="card p-4 mb-4">
+      <h3 class="font-bold text-sm mb-2 flex items-center gap-2" style="color:#2F5D50;">
+        <i class="fa-regular fa-calendar-check"></i> 今日行程
+      </h3>
+      <div id="dash-today" class="text-xs text-gray-400 italic">旅程期間自動顯示今日行程</div>
+    </div>
+
+    <!-- Hiking Progress -->
+    <div class="card p-4 mb-4">
+      <h3 class="font-bold text-sm mb-3 flex items-center gap-2" style="color:#1E3A34;">
+        <i class="fa-solid fa-person-hiking"></i> 健行里程記錄
+        <span class="ml-auto text-xs text-gray-400">目標 74.2 KM</span>
+      </h3>
+      <div class="flex items-end justify-between mb-2">
+        <div>
+          <span class="font-number text-3xl font-bold" style="color:#C26A3D;" id="dash-km-done">0</span>
+          <span class="text-sm text-gray-400"> / 74.2 KM</span>
+        </div>
+        <span class="font-number font-bold text-sm" id="dash-km-pct" style="color:#3C7A73;">0%</span>
+      </div>
+      <div class="prog-track mb-4">
+        <div class="prog-fill" id="dash-km-bar" style="width:0%"></div>
+      </div>
+      <div id="dash-hike-days" class="space-y-2"></div>
+    </div>
+
+    <!-- Expense Summary -->
+    <div class="card p-4 mb-4">
+      <h3 class="font-bold text-sm mb-3 flex items-center gap-2" style="color:#C26A3D;">
+        <i class="fa-solid fa-chart-pie"></i> 花費總覽
+      </h3>
+      <div class="grid grid-cols-3 gap-2 mb-3">
+        <div class="rounded-lg p-2 text-center" style="background:#F4F1EA;">
+          <p class="text-xs text-gray-500">總支出</p>
+          <p class="font-bold text-sm font-number" style="color:#C26A3D;" id="dash-total-jpy">¥0</p>
+          <p class="text-xs text-gray-400" id="dash-total-twd">NT$0</p>
+        </div>
+        <div class="rounded-lg p-2 text-center" style="background:#F4F1EA;">
+          <p class="text-xs text-gray-500">今日支出</p>
+          <p class="font-bold text-sm font-number" style="color:#3C7A73;" id="dash-today-jpy">¥0</p>
+          <p class="text-xs text-gray-400" id="dash-today-twd">NT$0</p>
+        </div>
+        <div class="rounded-lg p-2 text-center" style="background:#F4F1EA;">
+          <p class="text-xs text-gray-500">筆數</p>
+          <p class="font-bold text-sm font-number" style="color:#1E3A34;" id="dash-count">0</p>
+          <p class="text-xs text-gray-400">筆</p>
+        </div>
+      </div>
+      <canvas id="dash-chart" height="160"></canvas>
+      <h4 class="font-semibold text-xs mt-4 mb-2 flex items-center gap-1" style="color:#2F5D50;">
+        <i class="fa-solid fa-chart-bar"></i> 每日花費 (JPY)
+      </h4>
+      <canvas id="daily-bar-chart" height="150"></canvas>
+    </div>
+
+    <!-- Quick links -->
+    <div class="card p-4">
+      <h3 class="font-bold text-sm mb-3 flex items-center gap-2" style="color:#1E3A34;">
+        <i class="fa-solid fa-bolt"></i> 快速連結
+      </h3>
+      <div class="grid grid-cols-2 gap-2">
+        <a href="https://www.jma.go.jp/bosai/forecast/" target="_blank"
+           class="flex items-center gap-2 p-2 bg-blue-50 rounded-lg text-xs font-medium text-blue-600 hover:bg-blue-100 transition">
+          <i class="fa-solid fa-cloud-sun"></i> 天氣預報
+        </a>
+        <a href="https://maps.google.com/?q=熊野古道+中辺路" target="_blank"
+           class="flex items-center gap-2 p-2 bg-green-50 rounded-lg text-xs font-medium text-green-700 hover:bg-green-100 transition">
+          <i class="fa-solid fa-map-location-dot"></i> Google 地圖
+        </a>
+        <a href="https://www.mikumano.jp/meguri/" target="_blank"
+           class="flex items-center gap-2 p-2 rounded-lg text-xs font-medium transition" style="background:#FFF4E0;color:#C26A3D;">
+          <i class="fa-solid fa-stamp"></i> 踏破認定
+        </a>
+        <a href="https://www.mofa.gov.tw/embassies/jp/jtio/default.html" target="_blank"
+           class="flex items-center gap-2 p-2 bg-red-50 rounded-lg text-xs font-medium text-red-500 hover:bg-red-100 transition">
+          <i class="fa-solid fa-shield-halved"></i> 台灣辦事處
+        </a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ──────────────────────────────────────
+       SECTION: PLAN 行程
+  ────────────────────────────────────────── -->
+  <section id="sec-plan" class="page-section">
+    <h2 class="text-sm font-bold mb-3 flex items-center gap-2" style="color:#C26A3D;">
+      <i class="fa-solid fa-map-marked-alt"></i> 每日行程
+    </h2>
+
+    <!-- Day tabs -->
+    <div class="flex gap-2 overflow-x-auto pb-2 mb-4 scrollbar-hide">
+      <button class="day-tab flex-shrink-0 px-3 py-1.5 text-xs font-bold border rounded-lg" style="border-color:#C26A3D;color:#C26A3D;" onclick="switchDay(0,this)">11/23 D1</button>
+      <button class="day-tab flex-shrink-0 px-3 py-1.5 text-xs font-bold border rounded-lg" style="border-color:#C26A3D;color:#C26A3D;" onclick="switchDay(1,this)">11/24 D2</button>
+      <button class="day-tab flex-shrink-0 px-3 py-1.5 text-xs font-bold border rounded-lg" style="border-color:#C26A3D;color:#C26A3D;" onclick="switchDay(2,this)">11/25 D3</button>
+      <button class="day-tab flex-shrink-0 px-3 py-1.5 text-xs font-bold border rounded-lg" style="border-color:#C26A3D;color:#C26A3D;" onclick="switchDay(3,this)">11/26 D4</button>
+      <button class="day-tab flex-shrink-0 px-3 py-1.5 text-xs font-bold border rounded-lg" style="border-color:#C26A3D;color:#C26A3D;" onclick="switchDay(4,this)">11/27 D5</button>
+      <button class="day-tab flex-shrink-0 px-3 py-1.5 text-xs font-bold border rounded-lg" style="border-color:#C26A3D;color:#C26A3D;" onclick="switchDay(5,this)">11/28 D6</button>
+      <button class="day-tab flex-shrink-0 px-3 py-1.5 text-xs font-bold border rounded-lg" style="border-color:#C26A3D;color:#C26A3D;" onclick="switchDay(6,this)">11/29 D7</button>
+      <button class="day-tab flex-shrink-0 px-3 py-1.5 text-xs font-bold border rounded-lg" style="border-color:#C26A3D;color:#C26A3D;" onclick="switchDay(7,this)">11/30 D8</button>
+    </div>
+
+    <div id="plan-day-container"></div>
+  </section>
+
+
+  <!-- ──────────────────────────────────────
+       SECTION: GUIDE 深度導覽
+  ────────────────────────────────────────── -->
+  <section id="sec-guide" class="page-section">
+    <h2 class="text-sm font-bold mb-3 flex items-center gap-2" style="color:#C26A3D;">
+      <i class="fa-solid fa-book-open"></i> 深度導覽
+    </h2>
+    <div id="guide-content" class="space-y-4 mb-4"></div>
+    <div class="card p-4">
+      <h3 class="font-bold text-sm mb-3 flex items-center gap-2" style="color:#1E3A34;">
+        <i class="fa-solid fa-map" style="color:#C26A3D;"></i> 熊野古道地圖
+      </h3>
+      <div class="map-wrap">
+        <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=135.50,33.65,136.20,34.20&layer=mapnik" allowfullscreen></iframe>
+      </div>
+      <p class="text-xs text-gray-400 text-center mt-2">© OpenStreetMap contributors</p>
+    </div>
+  </section>
+
+
+  <!-- ──────────────────────────────────────
+       SECTION: WALLET 記帳
+  ────────────────────────────────────────── -->
+  <section id="sec-wallet" class="page-section">
+    <h2 class="text-sm font-bold mb-3 flex items-center gap-2" style="color:#C26A3D;">
+      <i class="fa-solid fa-wallet"></i> 記帳 · 匯率換算
+    </h2>
+
+    <!-- Currency Converter -->
+    <div class="card p-4 mb-4">
+      <h3 class="font-bold text-sm text-gray-600 mb-2 flex items-center gap-2">
+        <i class="fa-solid fa-coins"></i> 匯率換算
+      </h3>
+      <div class="flex items-center gap-2 mb-3 rounded-lg px-3 py-2" style="background:#F4F1EA;">
+        <span class="text-xs text-gray-500 whitespace-nowrap">100 JPY =</span>
+        <input id="rate-input" type="number" step="0.1" min="1" value="23"
+          class="border rounded-lg px-2 py-1 text-sm font-number font-bold w-20 outline-none text-center"
+          style="border-color:#C26A3D;color:#C26A3D;" />
+        <span class="text-xs text-gray-500">TWD</span>
+        <button onclick="saveRate()"
+          class="ml-auto text-xs px-3 py-1 rounded-lg text-white font-semibold transition hover:opacity-90"
+          style="background:#C26A3D;">
+          <i class="fa-solid fa-check mr-1"></i>更新匯率
+        </button>
+      </div>
+      <div class="grid grid-cols-2 gap-3 mb-3">
+        <div>
+          <label class="text-xs text-gray-500 mb-1 block">日幣 JPY → 台幣</label>
+          <input id="conv-jpy" type="number" placeholder="1000" oninput="convJPY()"
+            class="border rounded-lg px-3 py-2 text-sm w-full outline-none" style="border-color:#E8E3D9;" />
+          <p class="text-xs mt-1 text-gray-400">= <span id="conv-twd-out" class="font-bold font-number" style="color:#C26A3D;">NT$0</span></p>
+        </div>
+        <div>
+          <label class="text-xs text-gray-500 mb-1 block">台幣 TWD → 日幣</label>
+          <input id="conv-twd" type="number" placeholder="230" oninput="convTWD()"
+            class="border rounded-lg px-3 py-2 text-sm w-full outline-none" style="border-color:#E8E3D9;" />
+          <p class="text-xs mt-1 text-gray-400">= <span id="conv-jpy-out" class="font-bold font-number" style="color:#3C7A73;">¥0</span></p>
+        </div>
+      </div>
+      <div id="rate-ref-table" class="rounded-xl p-3 text-xs font-number grid grid-cols-2 gap-x-4 gap-y-1 text-gray-600" style="background:#F4F1EA;">
+        <span>¥1,000 = NT$230</span><span>¥5,000 = NT$1,150</span>
+        <span>¥10,000 = NT$2,300</span><span>¥20,000 = NT$4,600</span>
+        <span>¥30,000 = NT$6,900</span><span>¥50,000 = NT$11,500</span>
+      </div>
+    </div>
+
+    <!-- Add Expense -->
+    <div class="card p-4 mb-4">
+      <h3 class="font-bold text-sm text-gray-600 mb-3 flex items-center gap-2">
+        <i class="fa-solid fa-plus-circle"></i> 新增花費
+      </h3>
+      <div class="space-y-2">
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-xs text-gray-500 mb-0.5 block">日期</label>
+            <input id="exp-date" type="date" class="border rounded-lg px-2 py-1.5 text-xs w-full outline-none" style="border-color:#E8E3D9;" />
+          </div>
+          <div>
+            <label class="text-xs text-gray-500 mb-0.5 block">類別</label>
+            <select id="exp-cat" class="border rounded-lg px-2 py-1.5 text-xs w-full outline-none" style="border-color:#E8E3D9;">
+              <option value="交通">🚌 交通</option>
+              <option value="住宿">🏨 住宿</option>
+              <option value="餐飲">🍱 餐飲</option>
+              <option value="門票">🎫 門票</option>
+              <option value="購物">🛍️ 購物</option>
+              <option value="健行">🥾 健行裝備</option>
+              <option value="其他">📌 其他</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="text-xs text-gray-500 mb-0.5 block">品項說明</label>
+          <input id="exp-name" type="text" placeholder="例：飯店會席料理"
+            class="border rounded-lg px-3 py-1.5 text-sm w-full outline-none" style="border-color:#E8E3D9;" />
+        </div>
+        <div>
+          <label class="text-xs text-gray-500 mb-0.5 block">金額與幣別</label>
+          <div class="grid gap-2" style="grid-template-columns: 1fr auto;">
+            <input id="exp-amount" type="number" placeholder="3500" oninput="previewExpConvert()"
+              class="border rounded-lg px-3 py-1.5 text-sm w-full outline-none" style="border-color:#E8E3D9;" />
+            <select id="exp-currency" onchange="previewExpConvert()"
+              class="border rounded-lg px-2 py-1.5 text-xs outline-none" style="border-color:#E8E3D9;width:90px;">
+              <option value="JPY">¥ 日幣</option>
+              <option value="TWD">NT$ 台幣</option>
+            </select>
+          </div>
+          <p id="exp-converted" class="text-xs mt-1 font-number hidden" style="color:#3C7A73;"></p>
+        </div>
+        <button onclick="addExpense()"
+          class="w-full py-2 rounded-lg text-white text-sm font-semibold transition hover:opacity-90"
+          style="background:linear-gradient(135deg,#C26A3D,#3C7A73);">
+          <i class="fa-solid fa-plus mr-1"></i> 記錄此筆花費
+        </button>
+      </div>
+    </div>
+
+    <!-- Expense List -->
+    <div class="card p-4">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="font-bold text-sm text-gray-600 flex items-center gap-2">
+          <i class="fa-solid fa-list-ul"></i> 花費明細
+        </h3>
+        <div class="flex gap-2">
+          <button onclick="exportCSV()" class="text-xs px-2 py-1 rounded border" style="border-color:#3C7A73;color:#3C7A73;">
+            <i class="fa-solid fa-file-csv"></i> CSV
+          </button>
+          <button onclick="exportJSON()" class="text-xs px-2 py-1 rounded border" style="border-color:#3C7A73;color:#3C7A73;">
+            <i class="fa-solid fa-download"></i> JSON
+          </button>
+        </div>
+      </div>
+      <div class="flex gap-3 text-xs mb-3 rounded-lg p-2" style="background:#F4F1EA;">
+        <span>合計：<strong class="font-number" style="color:#C26A3D;" id="list-total-jpy">¥0</strong></span>
+        <span class="text-gray-300">|</span>
+        <span><strong class="font-number" style="color:#3C7A73;" id="list-total-twd">NT$0</strong></span>
+      </div>
+      <div id="expense-list" style="max-height:360px;overflow-y:auto;">
+        <p class="text-xs text-gray-400 text-center py-6">尚無花費記錄</p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ──────────────────────────────────────
+       SECTION: LISTS 清單 & 備忘
+  ────────────────────────────────────────── -->
+  <section id="sec-lists" class="page-section">
+    <h2 class="text-sm font-bold mb-3 flex items-center gap-2" style="color:#C26A3D;">
+      <i class="fa-solid fa-check-double"></i> 行前清單 &amp; 備忘錄
+    </h2>
+
+    <!-- Carry-on -->
+    <div class="card p-4 mb-4">
+      <h3 class="font-bold text-sm mb-3 flex items-center gap-2" style="color:#2F5D50;">
+        <i class="fa-solid fa-bag-shopping"></i> 隨身行李
+        <span id="cl-carry-prog" class="ml-auto text-xs font-bold px-2 py-0.5 rounded-full text-white" style="background:#C26A3D;">0/0</span>
+      </h3>
+      <div class="prog-track mb-3"><div class="prog-fill" id="cl-carry-bar" style="width:0%"></div></div>
+      <div id="cl-carry" class="space-y-0.5"></div>
+    </div>
+
+    <!-- Checked-in -->
+    <div class="card p-4 mb-4">
+      <h3 class="font-bold text-sm mb-3 flex items-center gap-2" style="color:#2F5D50;">
+        <i class="fa-solid fa-suitcase"></i> 托運行李
+        <span id="cl-check-prog" class="ml-auto text-xs font-bold px-2 py-0.5 rounded-full text-white" style="background:#3C7A73;">0/0</span>
+      </h3>
+      <div class="prog-track mb-3"><div class="prog-fill" id="cl-check-bar" style="width:0%"></div></div>
+      <div id="cl-check" class="space-y-0.5"></div>
+    </div>
+
+    <button onclick="resetChecklist()" class="w-full mb-4 py-2 rounded-xl text-sm font-medium border-2 transition hover:bg-orange-50" style="border-color:#C26A3D;color:#C26A3D;">
+      <i class="fa-solid fa-redo mr-1"></i> 重置清單
+    </button>
+
+    <!-- Memo -->
+    <div class="card p-4 mb-4">
+      <h3 class="font-bold text-sm mb-3 flex items-center gap-2" style="color:#1E3A34;">
+        <i class="fa-solid fa-sticky-note" style="color:#C26A3D;"></i> 個人備忘錄
+      </h3>
+      <textarea id="memo-text" rows="8" placeholder="記下重要資訊、備忘、心得..."
+        class="border rounded-lg p-3 text-sm w-full outline-none resize-none" style="border-color:#E8E3D9;font-family:inherit;"
+        oninput="saveMemo()"></textarea>
+      <div class="flex justify-between items-center mt-2">
+        <span id="memo-saved" class="text-xs text-gray-400">自動儲存</span>
+        <button onclick="clearMemo()" class="text-xs text-red-300 hover:text-red-500"><i class="fa-solid fa-trash mr-1"></i>清除</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+
+<!-- ══════════════════════════════════════════
+     BOTTOM NAVIGATION
+══════════════════════════════════════════ -->
+<nav class="bottom-nav fixed bottom-0 left-0 right-0 bg-white z-40">
+  <div class="flex justify-around items-center max-w-2xl mx-auto py-2">
+    <button class="nav-btn active flex flex-col items-center gap-0.5 px-3 py-1" onclick="showSection('dashboard',this)">
+      <i class="nav-icon fa-solid fa-gauge-high text-base transition-transform"></i>
+      <span class="text-[10px] font-medium">總覽</span>
+    </button>
+    <button class="nav-btn flex flex-col items-center gap-0.5 px-3 py-1 text-gray-400" onclick="showSection('plan',this)">
+      <i class="nav-icon fa-solid fa-map-marked-alt text-base transition-transform"></i>
+      <span class="text-[10px] font-medium">行程</span>
+    </button>
+    <button class="nav-btn flex flex-col items-center gap-0.5 px-3 py-1 text-gray-400" onclick="showSection('guide',this)">
+      <i class="nav-icon fa-solid fa-torii-gate text-base transition-transform"></i>
+      <span class="text-[10px] font-medium">導覽</span>
+    </button>
+    <button class="nav-btn flex flex-col items-center gap-0.5 px-3 py-1 text-gray-400" onclick="showSection('wallet',this)">
+      <i class="nav-icon fa-solid fa-wallet text-base transition-transform"></i>
+      <span class="text-[10px] font-medium">記帳</span>
+    </button>
+    <button class="nav-btn flex flex-col items-center gap-0.5 px-3 py-1 text-gray-400" onclick="showSection('lists',this)">
+      <i class="nav-icon fa-solid fa-check-double text-base transition-transform"></i>
+      <span class="text-[10px] font-medium">清單</span>
+    </button>
+  </div>
+</nav>
+
+
+<!-- ══════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════ -->
+<script>
+// ═══════════════════════════════════
+// DATA
+// ═══════════════════════════════════
+const LS = 'kumano2026';
+
+const PLANS = [
+  {
+    day:'D01', date:'2026-11-23', label:'11/23 (一)', emoji:'✈️', theme:'啟程與調整',
+    items:[
+      { time:'08:30', icon:'✈️', title:'BR130 起飛', desc:'桃園國際機場 → 大阪關西', alert:true },
+      { time:'12:05', icon:'🛬', title:'抵達關西空港', desc:'辦理入境、啟用網卡、領行李' },
+      { time:'14:00', icon:'🏨', title:'入住飯店', desc:'安頓行李，稍作休息' },
+      { time:'18:00', icon:'🍽️', title:'晚餐', desc:'自理，探索周邊' },
+    ],
+    hike: null
+  },
+  {
+    day:'D02', date:'2026-11-24', label:'11/24 (二)', emoji:'🥾', theme:'踏上中邊路起點',
+    items:[
+      { time:'07:00', icon:'🍳', title:'早餐', desc:'飯店早餐' },
+      { time:'08:30', icon:'🥾', title:'出發健行', desc:'滝尻王子 → 高原熊野神社 → 牛馬童子 → 近露王子', highlight:true },
+      { time:'12:00', icon:'🍱', title:'午餐', desc:'健行便當，沿途食用' },
+      { time:'18:30', icon:'🍶', title:'晚餐', desc:'飯店會席料理' },
+    ],
+    hike: { km:14, dur:'6-8 小時', route:'滝尻王子 → 高原熊野神社 → 牛馬童子 → 近露王子' }
+  },
+  {
+    day:'D03', date:'2026-11-25', label:'11/25 (三)', emoji:'⛩️', theme:'王子巡禮之日',
+    items:[
+      { time:'07:00', icon:'🍳', title:'早餐', desc:'飯店早餐' },
+      { time:'08:30', icon:'🥾', title:'出發健行', desc:'近露王子 → 繼櫻王子 → 發心門王子', highlight:true },
+      { time:'12:00', icon:'🍱', title:'午餐', desc:'健行便當' },
+      { time:'18:30', icon:'🍶', title:'晚餐', desc:'飯店' },
+    ],
+    hike: { km:17.7, dur:'7-9 小時', route:'近露王子 → 繼櫻王子 → 發心門王子' }
+  },
+  {
+    day:'D04', date:'2026-11-26', label:'11/26 (四)', emoji:'🌊', theme:'速玉信仰與海岸',
+    items:[
+      { time:'07:00', icon:'🍳', title:'早餐', desc:'飯店早餐' },
+      { time:'08:30', icon:'🥾', title:'出發健行', desc:'小雲取越 → 熊野速玉大社 → 神倉神社 → 高野坂', highlight:true },
+      { time:'12:30', icon:'🍽️', title:'午餐', desc:'當地餐廳' },
+      { time:'15:00', icon:'⛩️', title:'補陀洛山寺', desc:'參觀海邊古寺' },
+      { time:'18:30', icon:'🍶', title:'晚餐', desc:'飯店' },
+    ],
+    hike: { km:14, dur:'約 5.5 小時', route:'小雲取越 → 三帆船 → 熊野速玉大社 → 阿須賀神社 → 神倉神社 → 高野坂 → 補陀洛山寺' }
+  },
+  {
+    day:'D05', date:'2026-11-27', label:'11/27 (五)', emoji:'💧', theme:'那智信仰核心',
+    items:[
+      { time:'07:00', icon:'🍳', title:'早餐', desc:'飯店早餐' },
+      { time:'08:30', icon:'🥾', title:'出發健行', desc:'市野野王子 → 大門坂 → 飛瀧神社 → 那智大社 → 大雲取越', highlight:true },
+      { time:'12:30', icon:'🍽️', title:'午餐', desc:'當地餐廳' },
+      { time:'18:30', icon:'🍶', title:'晚餐', desc:'飯店' },
+    ],
+    hike: { km:15.5, dur:'8-9 小時', route:'市野野王子 → 大門坂 → 飛瀧神社 → 熊野那智大社 → 青岸渡寺 → 大雲取越' }
+  },
+  {
+    day:'D06', date:'2026-11-28', label:'11/28 (六)', emoji:'🌲', theme:'熊野本宮總本社',
+    items:[
+      { time:'07:00', icon:'🍳', title:'早餐', desc:'飯店早餐' },
+      { time:'08:30', icon:'🥾', title:'出發健行', desc:'潮見峠 → 發心門王子 → 熊野本宮大社 → 大齋原 → 湯峰王子', highlight:true },
+      { time:'12:00', icon:'🍱', title:'午餐', desc:'健行便當' },
+      { time:'18:30', icon:'♨️', title:'晚餐', desc:'溫泉旅館料理' },
+    ],
+    hike: { km:13, dur:'6-7 小時', route:'潮見峠 → 北見越 → 稻葉根王子 → 發心門王子 → 熊野本宮大社 → 大齋原 → 湯峰王子' }
+  },
+  {
+    day:'D07', date:'2026-11-29', label:'11/29 (日)', emoji:'🎌', theme:'完走認證與大阪巡禮',
+    items:[
+      { time:'07:00', icon:'🍳', title:'早餐', desc:'飯店早餐' },
+      { time:'09:00', icon:'🏆', title:'中邊路全踏破認證', desc:'本宮大社領取完走認定書', alert:true },
+      { time:'12:30', icon:'🐟', title:'午餐', desc:'黑潮市場自理' },
+      { time:'15:00', icon:'🛍️', title:'心齋橋購物', desc:'大阪心齋橋、道頓堀自由活動' },
+      { time:'18:30', icon:'🍽️', title:'晚餐', desc:'道頓堀自理' },
+    ],
+    hike: null
+  },
+  {
+    day:'D08', date:'2026-11-30', label:'11/30 (一)', emoji:'🏠', theme:'返程',
+    items:[
+      { time:'07:00', icon:'🍳', title:'早餐', desc:'飯店早餐' },
+      { time:'09:00', icon:'🚌', title:'前往機場', desc:'飯店 → 關西空港，建議提早出發', alert:true },
+      { time:'13:10', icon:'✈️', title:'BR131 起飛', desc:'大阪關西 → 台北桃園', alert:true },
+      { time:'15:00', icon:'🏡', title:'抵達桃園', desc:'歡迎回家！旅程圓滿結束 ⛩️' },
+    ],
+    hike: null
+  }
+];
+
+const HIKE_DAYS = PLANS.filter(p => p.hike);
+const TOTAL_KM  = 74.2;
+
+const GUIDES = [
+  {
+    name:'熊野本宮大社', emoji:'⛩️',
+    tags:['三山主社','世界遺產','信仰核心'],
+    intro:'熊野三山之主祭神社，古代熊野信仰核心。平安時代起，上皇與貴族頻繁參拜形成「熊野詣」潮流。',
+    history:'原址位於大齋原，明治22年（1889）水患後遷至現址，原址留有巨型大鳥居（高33.9m）。',
+    facts:['主祭神為家都美御子大神','古時稱為「日本第一大靈驗所」','黑色八咫烏為熊野象徵'],
+    map:'https://www.openstreetmap.org/export/embed.html?bbox=135.76,33.82,135.80,33.86&layer=mapnik'
+  },
+  {
+    name:'大齋原', emoji:'🌿',
+    tags:['本宮舊址','大鳥居','世界遺產'],
+    intro:'熊野本宮舊社地，位於熊野川沙洲。豎立著日本最大鳥居（高33.9m），氣勢磅礴，令人震撼。',
+    history:'1889年洪水沖毀社殿後成為聖域遺址，2004年列入世界文化遺產。',
+    facts:['擁有日本最大級大鳥居（高33.9m）','曾為多王子社集中地','被列入2004年世界文化遺產'],
+    map: null
+  },
+  {
+    name:'那智瀑布', emoji:'💧',
+    tags:['日本最高瀑布','飛瀧神社','133m'],
+    intro:'日本最高單一落差瀑布（133m），為飛瀧神社神體。自古即是修驗道聖地，與青岸渡寺構成神佛習合奇景。',
+    history:'仁德天皇時代已有朝拜記錄，神瀑信仰延續至今逾千年。',
+    facts:['每年7月舉行那智火祭（日本三大火祭之一）','與青岸渡寺形成神佛習合景觀','瀑布落差133公尺，列入世界遺產'],
+    map:'https://www.openstreetmap.org/export/embed.html?bbox=135.88,33.67,135.92,33.71&layer=mapnik'
+  },
+  {
+    name:'熊野速玉大社', emoji:'🏯',
+    tags:['熊野三山','新宮','神宝館'],
+    intro:'熊野三山之一，位於新宮市熊野川河口，供奉熊野速玉大神，氣氛莊嚴寧靜。',
+    history:'曾遭戰亂損毀，江戶時代重建。神宝館珍藏日本最古老神寶群，彌足珍貴。',
+    facts:['神宝館藏日本最古老神寶群之一','境內梛木被指定為天然紀念物','與神倉神社共為速玉信仰核心'],
+    map: null
+  },
+  {
+    name:'熊野那智大社', emoji:'🦅',
+    tags:['三山之一','那智火祭','絕景'],
+    intro:'供奉瀑布神靈，與青岸渡寺並立，展現神佛習合的珍貴文化，三重塔配那智瀑布絕景聞名全日本。',
+    history:'平安時代確立神聖地位，成為熊野信仰核心之一。那智火祭為日本三大火祭之一。',
+    facts:['主祭神為熊野夫須美大神','那智火祭為日本三大火祭之一','境內可眺望那智瀑布133m美景'],
+    map: null
+  },
+  {
+    name:'中邊路（Nakahechi）', emoji:'🥾',
+    tags:['UNESCO 世界遺產','約70KM','皇道'],
+    intro:'熊野古道最主要的參拜路線，連結田邊至熊野三山，全長約70公里，俗稱「皇道」。',
+    history:'平安時代起成為皇族、貴族參拜熊野的主要路線，沿途設九十九王子社供休憩禮拜。',
+    facts:['沿途設置九十九王子社','2004年登錄UNESCO世界文化遺產','完走可領取「牛馬童子証」認定書'],
+    map: null
+  }
+];
+
+const CHECKLIST_DATA = {
+  carry: {
+    items:['護照','日幣 / 台幣','行動電源','相機','隱眼','網卡','水壺','筆','各項憑證','耳機','外套','帽子','面紙 / 濕紙巾','信用卡','駕照 / 日文譯本']
+  },
+  check: {
+    items:['換洗衣物','鞋子 / 襪子','充電器','盥洗用具','內衣褲','雨具','延長線','個人藥品','化妝品 / 保養品','生理用品','防曬用品','行李秤','轉接頭','塑膠袋','小剪刀','衣架','眼鏡(盒)','口罩','棉花棒','其他']
+  }
+};
+
+const CAT_COLOR = { '交通':'#3C7A73','住宿':'#1E3A34','餐飲':'#C26A3D','門票':'#2F5D50','購物':'#8B6914','健行':'#4A7C6F','其他':'#7A6B5D' };
+const CAT_ICON  = { '交通':'🚌','住宿':'🏨','餐飲':'🍱','門票':'🎫','購物':'🛍️','健行':'🥾','其他':'📌' };
+
+// ═══════════════════════════════════
+// STATE
+// ═══════════════════════════════════
+let expenses  = JSON.parse(localStorage.getItem(LS+'_exp')  || '[]');
+let checks    = JSON.parse(localStorage.getItem(LS+'_chk')  || '{}');
+let hikeLog   = JSON.parse(localStorage.getItem(LS+'_hike') || '{}');
+let dashChart    = null;
+let barChart     = null;
+let exchangeRate = parseFloat(localStorage.getItem(LS+'_rate') || '23');
+
+// ═══════════════════════════════════
+// INIT
+// ═══════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  initFontSize();
+  startCountdown();
+  renderGuide();
+  renderChecklist();
+  renderExpenses();
+  loadMemo();
+  updateDashboard();
+  updateRateDisplay();
+  // auto-select today's day tab
+  const todayIdx = PLANS.findIndex(p => p.date === new Date().toISOString().split('T')[0]);
+  const initIdx  = todayIdx >= 0 ? todayIdx : 0;
+  switchDay(initIdx, document.querySelectorAll('.day-tab')[initIdx]);
+  document.getElementById('exp-date').value = new Date().toISOString().split('T')[0];
+});
+
+// ═══════════════════════════════════
+// FONT SIZE TOGGLE
+// ═══════════════════════════════════
+function initFontSize() {
+  const saved = localStorage.getItem(LS+'_font');
+  if (saved === 'large') {
+    document.body.classList.add('large-font');
+  }
+  updateFontBtn();
+  adjustMainPadding();
+}
+
+function toggleFontSize() {
+  const isLarge = document.body.classList.toggle('large-font');
+  localStorage.setItem(LS+'_font', isLarge ? 'large' : 'normal');
+  updateFontBtn();
+}
+
+function updateFontBtn() {
+  const isLarge = document.body.classList.contains('large-font');
+  document.getElementById('font-toggle-label').textContent = isLarge ? 'A-' : 'A+';
+  document.getElementById('font-toggle-badge').textContent = isLarge ? '放大' : '標準';
+  adjustMainPadding();
+}
+
+function adjustMainPadding() {
+  const header = document.querySelector('header');
+  const main   = document.getElementById('main-content');
+  if (header && main) {
+    main.style.paddingTop = (header.offsetHeight + 8) + 'px';
+  }
+}
+
+// ═══════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════
+function showSection(name, btn) {
+  document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => {
+    b.classList.remove('active');
+    b.style.color = '';
+  });
+  document.getElementById('sec-' + name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'dashboard') { updateDashboard(); setTimeout(() => { renderDashChart(); renderDailyBarChart(); }, 80); }
+}
+
+// ═══════════════════════════════════
+// COUNTDOWN
+// ═══════════════════════════════════
+function startCountdown() {
+  const target = new Date('2026-11-23T08:30:00+08:00');
+  const el = document.getElementById('header-countdown');
+  (function tick() {
+    const diff = target - Date.now();
+    if (diff <= 0) { el.textContent = '旅程進行中…'; return; }
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor(diff % 86400000 / 3600000);
+    const m = Math.floor(diff % 3600000 / 60000);
+    el.textContent = `${d}天${h}時${m}分`;
+    setTimeout(tick, 30000);
+  })();
+}
+
+// ═══════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════
+function updateDashboard() {
+  const today = new Date().toISOString().split('T')[0];
+  const todayPlan = PLANS.find(p => p.date === today);
+  const todayEl   = document.getElementById('dash-today');
+  if (todayPlan) {
+    todayEl.className = 'flex items-center gap-2 text-sm';
+    todayEl.innerHTML = `<span class="text-lg">${todayPlan.emoji}</span>
+      <div><span class="font-bold font-number text-xs" style="color:#C26A3D;">${todayPlan.day}</span>
+      <span class="font-semibold ml-1" style="color:#1E3A34;">${todayPlan.theme}</span>
+      ${todayPlan.hike ? `<div class="text-xs text-gray-400 mt-0.5">🥾 ${todayPlan.hike.km} KM · ${todayPlan.hike.dur}</div>` : ''}</div>`;
+  } else {
+    todayEl.className = 'text-xs text-gray-400 italic';
+    const now = new Date();
+    if (now < new Date('2026-11-23')) todayEl.textContent = '旅程尚未開始，期待出發！';
+    else todayEl.textContent = '旅程已結束，感謝一路同行 ⛩️';
+  }
+
+  // expense
+  const totalJPY  = expenses.reduce((s,e) => s+e.amount, 0);
+  const todayJPY  = expenses.filter(e => e.date===today).reduce((s,e) => s+e.amount, 0);
+  document.getElementById('dash-total-jpy').textContent = '¥'+totalJPY.toLocaleString();
+  document.getElementById('dash-total-twd').textContent = 'NT$'+Math.round(totalJPY*exchangeRate/100).toLocaleString();
+  document.getElementById('dash-today-jpy').textContent = '¥'+todayJPY.toLocaleString();
+  document.getElementById('dash-today-twd').textContent = 'NT$'+Math.round(todayJPY*exchangeRate/100).toLocaleString();
+  document.getElementById('dash-count').textContent     = expenses.length;
+
+  updateHikeDisplay();
+  renderDashChart();
+  renderDailyBarChart();
+}
+
+// ═══════════════════════════════════
+// HIKE TRACKER
+// ═══════════════════════════════════
+function updateHikeDisplay() {
+  const doneKM = HIKE_DAYS.filter(p => hikeLog[p.day]).reduce((s,p) => s+p.hike.km, 0);
+  const pct    = Math.round(doneKM / TOTAL_KM * 100);
+
+  document.getElementById('dash-km-done').textContent   = doneKM;
+  document.getElementById('dash-km-pct').textContent    = pct + '%';
+  document.getElementById('dash-km-bar').style.width    = pct + '%';
+  document.getElementById('header-hike-km').textContent = doneKM;
+
+  document.getElementById('dash-hike-days').innerHTML = HIKE_DAYS.map(p => {
+    const done = !!hikeLog[p.day];
+    const shortRoute = p.hike.route.length > 30 ? p.hike.route.slice(0,30)+'…' : p.hike.route;
+    return `<div class="flex items-center justify-between py-2 border-b last:border-0" style="border-color:#E8E3D9;">
+      <div class="flex items-center gap-2 min-w-0">
+        <span class="text-base flex-shrink-0">${done ? '✅' : '⬜'}</span>
+        <div class="min-w-0">
+          <div class="text-xs font-semibold" style="color:#1E3A34;">${p.day} ${p.label.slice(0,5)} — ${p.theme}</div>
+          <div class="text-xs text-gray-400 truncate">${shortRoute}</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 flex-shrink-0 ml-2">
+        <span class="hike-badge font-number">${p.hike.km} KM</span>
+        <button onclick="toggleHike('${p.day}')"
+          class="text-xs px-2 py-1 rounded-lg border font-medium transition hover:opacity-80"
+          style="${done ? 'background:#C26A3D;color:#fff;border-color:#C26A3D;' : 'background:#fff;color:#C26A3D;border-color:#C26A3D;'}">
+          ${done ? '取消' : '完成'}
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleHike(day) {
+  hikeLog[day] = !hikeLog[day];
+  localStorage.setItem(LS+'_hike', JSON.stringify(hikeLog));
+  updateHikeDisplay();
+  // also refresh plan card if currently viewing that day
+  const p = PLANS.find(x => x.day === day);
+  if (p) {
+    const idx = PLANS.indexOf(p);
+    const activePlan = document.getElementById('plan-day-container');
+    if (activePlan && document.getElementById('sec-plan').classList.contains('active')) {
+      switchDay(idx, document.querySelectorAll('.day-tab')[idx]);
+    }
+  }
+}
+
+// ═══════════════════════════════════
+// PLAN – Day Tabs + Timeline
+// ═══════════════════════════════════
+function switchDay(idx, btn) {
+  const plan = PLANS[idx];
+  if (!plan) return;
+
+  document.querySelectorAll('.day-tab').forEach(t => t.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+
+  const hikeHtml = plan.hike ? `
+    <div class="rounded-xl p-3 mb-4" style="background:linear-gradient(135deg,#1E3A34,#2F5D50);">
+      <div class="flex flex-wrap gap-2 items-center mb-2">
+        <span class="text-white text-sm font-semibold">🥾 健行資訊</span>
+        <span class="hike-badge font-number">${plan.hike.km} KM</span>
+        <span class="hike-badge"><i class="fa-regular fa-clock mr-1"></i>${plan.hike.dur}</span>
+        <button onclick="toggleHike('${plan.day}')"
+          class="ml-auto text-xs px-3 py-1 rounded-lg font-medium transition"
+          style="${hikeLog[plan.day] ? 'background:#C26A3D;color:#fff;' : 'background:rgba(255,255,255,0.18);color:#fff;'}">
+          ${hikeLog[plan.day] ? '✅ 已完成' : '標記完成'}
+        </button>
+      </div>
+      <p class="text-xs text-white/60">${plan.hike.route}</p>
+    </div>` : '';
+
+  const timelineHtml = plan.items.map((item, i) => {
+    const isLast = i === plan.items.length - 1;
+    const dotColor = item.alert ? '#C26A3D' : item.highlight ? '#3C7A73' : '#bbb';
+    return `<div class="flex gap-3">
+      <div class="flex flex-col items-center">
+        <div class="tl-dot" style="background:${dotColor};border:2px solid ${dotColor};"></div>
+        ${!isLast ? `<div class="tl-line flex-1 mt-1" style="min-height:28px;"></div>` : ''}
+      </div>
+      <div class="pb-4 flex-1 min-w-0">
+        <div class="flex items-baseline gap-2 flex-wrap">
+          <span class="font-number text-xs font-bold" style="color:#C26A3D;">${item.time}</span>
+          <span class="text-sm">${item.icon}</span>
+          <span class="font-medium text-sm" style="color:#1E3A34;">${item.title}</span>
+          ${item.alert ? '<span class="text-[10px] px-1.5 py-0.5 rounded text-white" style="background:#C26A3D;">注意</span>' : ''}
+        </div>
+        <p class="text-xs text-gray-500 mt-0.5">${item.desc}</p>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('plan-day-container').innerHTML = `
+    <div class="card p-4">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="text-3xl">${plan.emoji}</span>
+        <div>
+          <div class="font-number font-bold text-xs" style="color:#C26A3D;">${plan.day} · ${plan.label}</div>
+          <div class="font-display font-semibold text-base leading-tight" style="color:#1E3A34;">${plan.theme}</div>
+        </div>
+      </div>
+      ${hikeHtml}
+      <div>${timelineHtml}</div>
+    </div>`;
+}
+
+// ═══════════════════════════════════
+// GUIDE
+// ═══════════════════════════════════
+function renderGuide() {
+  const container = document.getElementById('guide-content');
+  GUIDES.forEach(g => {
+    const tagsHtml  = g.tags.map(t => `<span class="text-xs px-2 py-0.5 rounded-full" style="background:#E8E3D9;color:#2F5D50;">${t}</span>`).join('');
+    const factsHtml = g.facts.map((f,i) => `
+      <li class="flex items-start gap-2 text-sm">
+        <span class="font-number text-xs font-bold mt-0.5 w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center text-white" style="background:#C26A3D;">${i+1}</span>
+        <span class="text-gray-700">${f}</span>
+      </li>`).join('');
+    const mapHtml = g.map ? `<div class="map-wrap mt-3"><iframe src="${g.map}" allowfullscreen></iframe></div>` : '';
+    const div = document.createElement('div');
+    div.className = 'card p-4';
+    div.innerHTML = `
+      <div class="flex items-center gap-2 mb-2">
+        <span class="text-2xl">${g.emoji}</span>
+        <h3 class="font-display text-lg font-semibold" style="color:#1E3A34;">${g.name}</h3>
+      </div>
+      <div class="flex flex-wrap gap-1 mb-3">${tagsHtml}</div>
+      <p class="text-sm text-gray-700 leading-relaxed mb-3">${g.intro}</p>
+      <div class="px-3 py-2 rounded-lg text-xs leading-relaxed mb-3" style="background:#F4F1EA;border-left:3px solid #3C7A73;">
+        <span class="font-semibold" style="color:#3C7A73;">📜 歷史沿革：</span>
+        <span class="text-gray-600">${g.history}</span>
+      </div>
+      <p class="text-xs font-semibold mb-2" style="color:#C26A3D;"><i class="fa-solid fa-lightbulb mr-1"></i>冷知識</p>
+      <ul class="space-y-1.5">${factsHtml}</ul>
+      ${mapHtml}`;
+    container.appendChild(div);
+  });
+}
+
+// ═══════════════════════════════════
+// EXPENSE
+// ═══════════════════════════════════
+function addExpense() {
+  const date     = document.getElementById('exp-date').value;
+  const cat      = document.getElementById('exp-cat').value;
+  const name     = document.getElementById('exp-name').value.trim();
+  const rawAmt   = parseFloat(document.getElementById('exp-amount').value);
+  const currency = document.getElementById('exp-currency').value;
+  if (!date || !rawAmt || rawAmt <= 0) { alert('請填寫日期與金額'); return; }
+  const amount = currency === 'TWD' ? Math.round(rawAmt * 100 / exchangeRate) : Math.round(rawAmt);
+  expenses.push({ id:Date.now(), date, cat, name, amount });
+  localStorage.setItem(LS+'_exp', JSON.stringify(expenses));
+  document.getElementById('exp-name').value   = '';
+  document.getElementById('exp-amount').value = '';
+  document.getElementById('exp-converted').classList.add('hidden');
+  renderExpenses();
+  updateDashboard();
+}
+
+function deleteExpense(id) {
+  expenses = expenses.filter(e => e.id !== id);
+  localStorage.setItem(LS+'_exp', JSON.stringify(expenses));
+  renderExpenses();
+  updateDashboard();
+}
+
+function renderExpenses() {
+  const totalJPY = expenses.reduce((s,e) => s+e.amount, 0);
+  document.getElementById('list-total-jpy').textContent = '¥'+totalJPY.toLocaleString();
+  document.getElementById('list-total-twd').textContent = 'NT$'+Math.round(totalJPY*exchangeRate/100).toLocaleString();
+  const list = document.getElementById('expense-list');
+  if (!expenses.length) {
+    list.innerHTML = '<p class="text-xs text-gray-400 text-center py-6">尚無花費記錄</p>';
+    return;
+  }
+  list.innerHTML = expenses.slice().reverse().map(e => `
+    <div class="exp-row flex items-center justify-between py-2.5">
+      <div class="flex items-center gap-2 min-w-0">
+        <span class="text-xl flex-shrink-0">${CAT_ICON[e.cat]||'📌'}</span>
+        <div class="min-w-0">
+          <div class="text-sm font-medium truncate">${e.name||e.cat}</div>
+          <div class="text-xs text-gray-400">${e.date} · ${e.cat}</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 flex-shrink-0 ml-2">
+        <div class="text-right">
+          <div class="font-number font-bold text-sm" style="color:#1E3A34;">¥${e.amount.toLocaleString()}</div>
+          <div class="font-number text-xs text-gray-400">NT$${Math.round(e.amount*exchangeRate/100).toLocaleString()}</div>
+        </div>
+        <button onclick="deleteExpense(${e.id})" class="text-red-300 hover:text-red-500 text-sm">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+    </div>`).join('');
+}
+
+function renderDashChart() {
+  const ctx = document.getElementById('dash-chart');
+  if (!ctx) return;
+  const totals = {};
+  expenses.forEach(e => { totals[e.cat] = (totals[e.cat]||0)+e.amount; });
+  const labels = Object.keys(totals);
+  if (dashChart) { dashChart.destroy(); dashChart = null; }
+  if (!labels.length) return;
+  dashChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: labels.map(l => (CAT_ICON[l]||'📌')+' '+l),
+      datasets: [{ data:Object.values(totals), backgroundColor:labels.map(l=>CAT_COLOR[l]||'#7A6B5D'), borderWidth:0 }]
+    },
+    options: {
+      responsive:true,
+      plugins:{
+        legend:{ position:'bottom', labels:{ boxWidth:14, font:{size:21} } },
+        tooltip:{ callbacks:{ label:c => ` ¥${c.raw.toLocaleString()}` } }
+      },
+      cutout:'60%'
+    }
+  });
+}
+
+function exportCSV() {
+  if (!expenses.length) { alert('尚無資料'); return; }
+  download('kumano2026_expenses.csv', '\ufeff日期,類別,說明,JPY,TWD\n'+
+    expenses.map(e=>`${e.date},${e.cat},${e.name},${e.amount},${Math.round(e.amount*exchangeRate/100)}`).join('\n'), 'text/csv');
+}
+function exportJSON() {
+  if (!expenses.length) { alert('尚無資料'); return; }
+  download('kumano2026_backup.json', JSON.stringify({expenses,checks,hikeLog},null,2), 'application/json');
+}
+function download(filename, content, type) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([content],{type}));
+  a.download = filename; a.click();
+}
+
+// ═══════════════════════════════════
+// CURRENCY
+// ═══════════════════════════════════
+function convJPY() {
+  const v = parseFloat(document.getElementById('conv-jpy').value);
+  document.getElementById('conv-twd-out').textContent = v>0 ? 'NT$'+Math.round(v*exchangeRate/100).toLocaleString() : 'NT$0';
+}
+function convTWD() {
+  const v = parseFloat(document.getElementById('conv-twd').value);
+  document.getElementById('conv-jpy-out').textContent = v>0 ? '¥'+Math.round(v*100/exchangeRate).toLocaleString() : '¥0';
+}
+
+// ═══════════════════════════════════
+// EXCHANGE RATE
+// ═══════════════════════════════════
+function saveRate() {
+  const v = parseFloat(document.getElementById('rate-input').value);
+  if (v > 0) {
+    exchangeRate = v;
+    localStorage.setItem(LS+'_rate', exchangeRate);
+  }
+  updateRateDisplay();
+  renderExpenses();
+  updateDashboard();
+}
+
+function updateRateDisplay() {
+  const rateInput = document.getElementById('rate-input');
+  if (rateInput) rateInput.value = exchangeRate;
+  const refs = [1000, 5000, 10000, 20000, 30000, 50000];
+  const refEl = document.getElementById('rate-ref-table');
+  if (refEl) {
+    refEl.innerHTML = refs.map(v =>
+      `<span>¥${v.toLocaleString()} = NT$${Math.round(v*exchangeRate/100).toLocaleString()}</span>`
+    ).join('');
+  }
+  convJPY();
+  convTWD();
+}
+
+function previewExpConvert() {
+  const v   = parseFloat(document.getElementById('exp-amount').value);
+  const cur = document.getElementById('exp-currency').value;
+  const el  = document.getElementById('exp-converted');
+  if (v > 0) {
+    if (cur === 'TWD') {
+      el.textContent = `≈ ¥${Math.round(v * 100 / exchangeRate).toLocaleString()} JPY`;
+    } else {
+      el.textContent = `≈ NT$${Math.round(v * exchangeRate / 100).toLocaleString()} TWD`;
+    }
+    el.classList.remove('hidden');
+  } else {
+    el.classList.add('hidden');
+  }
+}
+
+function renderDailyBarChart() {
+  const ctx = document.getElementById('daily-bar-chart');
+  if (!ctx) return;
+  const labels = PLANS.map(p => p.date.slice(5).replace('-','/'));
+  const fullLabels = PLANS.map(p => p.day + '  ' + p.date.slice(5).replace('-','/'));
+  const data   = PLANS.map(p => expenses.filter(e => e.date === p.date).reduce((s,e) => s+e.amount, 0));
+  const colors = ['#3C7A73','#C26A3D','#2F5D50','#1E3A34','#4A7C6F','#8B6914','#3C7A73','#C26A3D'];
+  if (barChart) { barChart.destroy(); barChart = null; }
+  barChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        data,
+        backgroundColor: colors,
+        borderRadius: 5,
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title: (items) => fullLabels[items[0].dataIndex],
+            label: c => ` ¥${c.raw.toLocaleString()}  NT$${Math.round(c.raw*exchangeRate/100).toLocaleString()}`
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            font: { size: 11 },
+            callback: v => v >= 10000 ? '¥'+(v/1000)+'K' : v > 0 ? '¥'+v.toLocaleString() : '0'
+          }
+        },
+        x: {
+          ticks: {
+            font: { size: 11 },
+            maxRotation: 0,
+            minRotation: 0,
+            autoSkip: false
+          }
+        }
+      }
+    }
+  });
+}
+
+// ═══════════════════════════════════
+// CHECKLIST
+// ═══════════════════════════════════
+function renderChecklist() {
+  ['carry','check'].forEach(key => {
+    const items = CHECKLIST_DATA[key].items;
+    let done = 0;
+    const html = items.map((item,i) => {
+      const ck = !!checks[key+'_'+i];
+      if (ck) done++;
+      return `<label class="cl-item flex items-center gap-3 py-1.5 px-2 cursor-pointer">
+        <input type="checkbox" style="accent-color:#C26A3D;width:16px;height:16px;"
+          onchange="toggleCheck('${key}',${i},this.checked)" ${ck?'checked':''}>
+        <span class="text-sm ${ck?'line-through text-gray-400':'text-gray-700'}">${item}</span>
+      </label>`;
+    }).join('');
+    document.getElementById('cl-'+key).innerHTML = html;
+    const pct = items.length ? Math.round(done/items.length*100) : 0;
+    document.getElementById('cl-'+key+'-prog').textContent = `${done}/${items.length}`;
+    document.getElementById('cl-'+key+'-bar').style.width  = pct+'%';
+  });
+}
+
+function toggleCheck(key, idx, val) {
+  checks[key+'_'+idx] = val;
+  localStorage.setItem(LS+'_chk', JSON.stringify(checks));
+  const input = document.querySelector(`input[onchange="toggleCheck('${key}',${idx},this.checked)"]`);
+  if (input?.nextElementSibling) {
+    input.nextElementSibling.className = `text-sm ${val?'line-through text-gray-400':'text-gray-700'}`;
+  }
+  ['carry','check'].forEach(k => {
+    const items = CHECKLIST_DATA[k].items;
+    const d = items.filter((_,i) => checks[k+'_'+i]).length;
+    const pct = Math.round(d/items.length*100);
+    document.getElementById('cl-'+k+'-prog').textContent = `${d}/${items.length}`;
+    document.getElementById('cl-'+k+'-bar').style.width  = pct+'%';
+  });
+}
+
+function resetChecklist() {
+  if (!confirm('確定要重置所有清單？')) return;
+  checks = {};
+  localStorage.setItem(LS+'_chk', JSON.stringify(checks));
+  renderChecklist();
+}
+
+// ═══════════════════════════════════
+// MEMO
+// ═══════════════════════════════════
+function loadMemo() {
+  document.getElementById('memo-text').value = localStorage.getItem(LS+'_memo') || '';
+}
+function saveMemo() {
+  localStorage.setItem(LS+'_memo', document.getElementById('memo-text').value);
+  document.getElementById('memo-saved').textContent = '已儲存 '+new Date().toLocaleTimeString();
+}
+function clearMemo() {
+  if (!confirm('確定清除備忘錄？')) return;
+  document.getElementById('memo-text').value = '';
+  localStorage.removeItem(LS+'_memo');
+}
+
+</script>
+</body>
+</html>
