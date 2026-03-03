@@ -710,7 +710,7 @@ const GUIDES = [
 
 const CHECKLIST_DATA = {
   carry: {
-    items:['護照','日幣 / 台幣','行動電源','相機','隱眼','網卡','水壺','筆','各項憑證','耳機','外套','帽子','面紙 / 濕紙巾','信用卡','駕照 / 日文譯本']
+    items:['護照','日幣 / 台幣','行動電源','相機','隱眼','網卡','水壺','筆','耳機','外套','帽子','面紙 / 濕紙巾','信用卡']
   },
   check: {
     items:['換洗衣物','鞋子 / 襪子','充電器','盥洗用具','內衣褲','雨具','延長線','個人藥品','化妝品 / 保養品','生理用品','防曬用品','行李秤','轉接頭','塑膠袋','小剪刀','衣架','眼鏡(盒)','口罩','棉花棒','其他']
@@ -953,7 +953,78 @@ function switchDay(idx, btn) {
       </div>
       ${hikeHtml}
       <div>${timelineHtml}</div>
+    </div>
+    <div class="card p-4 mt-3">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="font-bold text-sm flex items-center gap-2" style="color:#1E3A34;">
+          <i class="fa-solid fa-book-open" style="color:#C26A3D;"></i> 日記
+        </h3>
+        <button onclick="copyDiary('${plan.day}')" id="diary-copy-btn-${plan.day}"
+          class="flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg border font-medium transition hover:opacity-80"
+          style="border-color:#3C7A73;color:#3C7A73;">
+          <i class="fa-regular fa-copy"></i> 複製
+        </button>
+      </div>
+      <textarea id="diary-${plan.day}" rows="6"
+        placeholder="在這裡記下今日的心得、所見、感受…"
+        class="border rounded-xl p-3 text-sm w-full outline-none resize-none leading-relaxed"
+        style="border-color:#E8E3D9;font-family:inherit;background:#FDFCF8;"
+        oninput="saveDiary('${plan.day}')"></textarea>
+      <div class="flex justify-between items-center mt-1">
+        <span id="diary-saved-${plan.day}" class="text-xs text-gray-400">自動儲存</span>
+        <span id="diary-count-${plan.day}" class="text-xs text-gray-400">0 字</span>
+      </div>
     </div>`;
+  // 載入已儲存的日記
+  loadDiary(plan.day);
+}
+
+// ═══════════════════════════════════
+// DIARY
+// ═══════════════════════════════════
+function saveDiary(day) {
+  const ta  = document.getElementById('diary-'+day);
+  const val = ta ? ta.value : '';
+  const diaries = JSON.parse(localStorage.getItem(LS+'_diary') || '{}');
+  diaries[day] = val;
+  localStorage.setItem(LS+'_diary', JSON.stringify(diaries));
+  const savedEl = document.getElementById('diary-saved-'+day);
+  const countEl = document.getElementById('diary-count-'+day);
+  if (savedEl) savedEl.textContent = '已儲存 ' + new Date().toLocaleTimeString();
+  if (countEl) countEl.textContent = val.length + ' 字';
+}
+
+function loadDiary(day) {
+  const diaries = JSON.parse(localStorage.getItem(LS+'_diary') || '{}');
+  const ta  = document.getElementById('diary-'+day);
+  const countEl = document.getElementById('diary-count-'+day);
+  if (ta && diaries[day]) {
+    ta.value = diaries[day];
+    if (countEl) countEl.textContent = diaries[day].length + ' 字';
+  }
+}
+
+function copyDiary(day) {
+  const ta  = document.getElementById('diary-'+day);
+  const btn = document.getElementById('diary-copy-btn-'+day);
+  if (!ta || !ta.value.trim()) {
+    if (btn) { btn.innerHTML = '<i class="fa-solid fa-xmark"></i> 內容為空'; setTimeout(() => { btn.innerHTML = '<i class="fa-regular fa-copy"></i> 複製'; }, 1500); }
+    return;
+  }
+  const plan = PLANS.find(p => p.day === day);
+  const header = plan ? `【${plan.day} ${plan.label} · ${plan.theme}】\n` : '';
+  navigator.clipboard.writeText(header + ta.value).then(() => {
+    if (btn) {
+      btn.innerHTML = '<i class="fa-solid fa-check"></i> 已複製';
+      btn.style.background = '#3C7A73';
+      btn.style.color = '#fff';
+      setTimeout(() => {
+        btn.innerHTML = '<i class="fa-regular fa-copy"></i> 複製';
+        btn.style.background = '';
+        btn.style.color = '#3C7A73';
+      }, 2000);
+    }
+  });
 }
 
 // ═══════════════════════════════════
